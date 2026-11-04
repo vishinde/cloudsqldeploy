@@ -1,0 +1,50 @@
+# Target GCP Environment
+project_id: "your-gcp-project-id"
+region: "us-central1"
+database_version: "POSTGRES_14"
+base_instance_name: "prod-db-instance"
+
+# Preferred primary zones in order of preference (Regional HA standby placed automatically)
+preferred_zones:
+  - "us-central1-a"
+  - "us-central1-b"
+  - "us-central1-c"
+  - "us-central1-f"
+
+# Operational Safeguards
+circuit_breaker_max_strikes: 2
+operation_timeout_sec: 600
+
+# Candidate Tiers Evaluated Sequentially upon Stockouts
+candidate_tiers:
+  - priority: 1
+    name: "Gen 4 N4 (Recommended Strategic Default)"
+    edition: "ENTERPRISE"
+    tier: "db-custom-N4-2-8192"           # 2 vCPU, 8 GB RAM (Gen 4 custom syntax)
+    disk_type: "HYPERDISK_BALANCED"
+    disk_size_gb: 50
+    enable_data_cache: false
+
+  - priority: 2
+    name: "Gen 4 C4 Enterprise Plus (High Performance)"
+    edition: "ENTERPRISE_PLUS"
+    tier: "db-perf-optimized-C4-2"        # 2 vCPU, 7.75 GB RAM
+    disk_type: "HYPERDISK_BALANCED"
+    disk_size_gb: 50
+    enable_data_cache: true               # Required for C4 in us-central1
+
+  - priority: 3
+    name: "Gen 2 N2 Enterprise Plus (Tactical Upgrade)"
+    edition: "ENTERPRISE_PLUS"
+    tier: "db-perf-optimized-N-2"         # 2 vCPU, 16 GB RAM
+    disk_type: "PD_SSD"
+    disk_size_gb: 50
+    enable_data_cache: false
+
+  - priority: 4
+    name: "Gen 2 Custom E2 (Legacy Fallback)"
+    edition: "ENTERPRISE"
+    tier: "db-custom-2-8192"              # 2 vCPU, 8 GB RAM
+    disk_type: "PD_SSD"
+    disk_size_gb: 50
+    enable_data_cache: false
